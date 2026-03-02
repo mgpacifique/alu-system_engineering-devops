@@ -4,7 +4,11 @@
 apt-get update -y
 # Install nginx
 apt-get install -y nginx
+# Allow traffic on port 80 (just in case firewall is active)
+ufw allow 'Nginx HTTP' || true
 # Create custom index page
-echo "Holberton School for the win!" > /var/www/html/index.html
+echo "Holberton School for the win!" > /var/www/html/index.nginx-debian.html
 # Ensure nginx is running
 service nginx start
+# Make sure nginx restarts properly
+service nginx restart
