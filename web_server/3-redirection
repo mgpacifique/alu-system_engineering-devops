@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-# Update and install nginx
+# Configures Nginx server with a redirect on /redirect_me
 
-sudo apt-get update -y
-sudo apt-get install -y nginx
-echo "Holberton School for the win!" | sudo tee /var/www/html/index.html
-sudo sed -i '/server_name _;/a \
-    location /redirect_me {\
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\
-    }' /etc/nginx/sites-available/default
-sudo service nginx restart
+apt-get update -y
+apt-get install -y nginx
+echo "Holberton School for the win!" | tee /var/www/html/index.html > /dev/null
+sed -i '/server_name _;/a location /redirect_me { return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4; }' /etc/nginx/sites-available/default
+service nginx restart
