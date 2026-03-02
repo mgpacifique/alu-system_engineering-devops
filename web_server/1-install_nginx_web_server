@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# Installs and configures Nginx to serve a custom page
+set -e
+
 apt-get -y update
 apt-get -y install nginx
-printf 'Holberton School for the win!\n' > /var/www/html/index.nginx-debian.html
-service nginx restart
+
+echo 'Holberton School for the win!' > /var/www/html/index.html
+
+service nginx start
+service nginx reload
