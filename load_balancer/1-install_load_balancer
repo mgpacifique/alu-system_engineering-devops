@@ -6,8 +6,15 @@
 sudo apt-get update -y
 sudo apt-get install -y haproxy
 
+# Stop nginx if it's running (to free up port 80)
+sudo service nginx stop 2>/dev/null || true
+sudo systemctl disable nginx 2>/dev/null || true
+
 # Enable HAproxy to be started by init script
 sudo sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
+
+# Backup original config
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak 2>/dev/null || true
 
 # Configure HAproxy
 sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOF
@@ -37,9 +44,12 @@ frontend http_front
 
 backend http_back
     balance roundrobin
-    server web-01 web-01:80 check
-    server web-02 web-02:80 check
+    server 6973-web-01 35.171.18.95:80 check
+    server 6973-web-02 184.72.182.76:80 check
 EOF
+
+# Test HAproxy configuration
+sudo haproxy -c -f /etc/haproxy/haproxy.cfg
 
 # Restart HAproxy to apply configuration
 sudo service haproxy restart
