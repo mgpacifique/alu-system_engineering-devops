@@ -10,8 +10,8 @@ sudo apt-get install -y nginx
 # shellcheck disable=SC2154
 HOSTNAME=$(hostname)
 
-# Add the custom header to the http block in nginx.conf
-sudo sed -i "/http {/a \\\tadd_header X-Served-By $HOSTNAME;" /etc/nginx/nginx.conf
+# Add the custom header to the default server block
+sudo sed -i "s/server_name _;/server_name _;\n\tadd_header X-Served-By $HOSTNAME;/" /etc/nginx/sites-available/default
 
 # Restart Nginx to apply changes
 sudo service nginx restart
