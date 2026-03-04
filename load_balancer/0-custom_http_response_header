@@ -6,15 +6,12 @@
 sudo apt-get update -y
 sudo apt-get install -y nginx
 
-# Configure Nginx to add custom header X-Served-By with the hostname
+# Get the hostname
 # shellcheck disable=SC2154
-config_line="add_header X-Served-By \$hostname;"
+HOSTNAME=$(hostname)
 
-# Check if the custom header is already configured
-if ! sudo grep -q "X-Served-By" /etc/nginx/nginx.conf; then
-    # Add the custom header configuration to the http block
-    sudo sed -i "/http {/a \\\t$config_line" /etc/nginx/nginx.conf
-fi
+# Add the custom header to the http block in nginx.conf
+sudo sed -i "/http {/a \\\tadd_header X-Served-By $HOSTNAME;" /etc/nginx/nginx.conf
 
 # Restart Nginx to apply changes
 sudo service nginx restart
