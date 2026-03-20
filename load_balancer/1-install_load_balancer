@@ -1,43 +1,40 @@
 #!/usr/bin/env bash
-# Installs and configures HAProxy to distribute traffic to web-01 and web-02 using roundrobin
+# Installs and configures HAProxy to balance traffic between web-01 and web-02
 
-# Update package list and install HAProxy
+# Install HAProxy
 sudo apt-get update -y
 sudo apt-get install -y haproxy
 
-# Enable HAProxy to be started by init script
+# Enable HAProxy init script
 echo "ENABLED=1" | sudo tee /etc/default/haproxy > /dev/null
 
 # Configure HAProxy
-sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOF
+sudo tee /etc/haproxy/haproxy.cfg > /dev/null << 'EOF'
 global
     log /dev/log local0
-    log /dev/log local1 notice
-    chroot /var/lib/haproxy
-    stats socket /run/haproxy/admin.sock mode 660 level admin
-    stats timeout 30s
+    maxconn 2048
     user haproxy
     group haproxy
-    daemon
 
 defaults
-    log     global
-    mode    http
-    option  httplog
-    option  dontlognull
-    timeout connect 5000
-    timeout client  50000
-    timeout server  50000
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    retries 3
+    timeout connect 5000ms
+    timeout client  50000ms
+    timeout server  50000ms
 
-frontend http_front
+frontend web-frontend
     bind *:80
-    default_backend http_back
+    default_backend web-servers
 
-backend http_back
+backend web-servers
     balance roundrobin
-    server 6973-web-01 35.171.18.95:80 check
-    server 6973-web-02 184.72.182.76:80 check
+    server web-01 3.82.209.129:80 check
+    server web-02 184.72.182.76:80 check
 EOF
 
-# Restart HAProxy to apply configuration
+# Restart HAProxy
 sudo service haproxy restart
