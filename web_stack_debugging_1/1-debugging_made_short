@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# adv task
-sudo sed -i 's/8080/80/g' /etc/nginx/sites-enabled/default
-sudo service nginx restart
-sudo pkill -9 nginx
+# Configures Nginx to run and listen on port 80
+nginx
+curl -sI 0:80 | head -1
